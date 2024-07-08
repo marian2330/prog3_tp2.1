@@ -1,7 +1,7 @@
 class Sensor {
     constructor(id, name, type, value, unit, updated_at) {
         if (!['temperature', 'humidity', 'pressure'].includes(type)) {
-            throw new Error(`Tipo de sensor no válido: ${type}`);
+            throw new Error(`Tipo de sensor no válido :  ${type}`);
         }
         this.id = id;
         this.name = name;
