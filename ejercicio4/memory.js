@@ -25,12 +25,37 @@ class Card {
     #flip() {
         const cardElement = this.element.querySelector(".card");
         cardElement.classList.add("flipped");
+        this.isFlipped=true;
     }
 
     #unflip() {
         const cardElement = this.element.querySelector(".card");
         cardElement.classList.remove("flipped");
+        this.isFlipped = false;
     }
+
+    toggleFlip() {
+        if (this.isFlipped) {
+            this.#unflip();
+        } else {
+            this.#flip();
+        }
+    }
+
+    matches(otherCard) {
+        return this.name === otherCard.name;
+    }
+
+    match() {
+        this.element.classList.add("matched");
+    }
+
+    reset() {
+        this.#unflip();
+        this.element.classList.remove("matched");
+    }
+
+
 }
 
 class Board {
@@ -74,6 +99,21 @@ class Board {
             this.onCardClick(card);
         }
     }
+    shuffleCards() {
+        this.cards = this.cards.sort(() => Math.random() - 0.5);
+    }
+
+    flipDownAllCards() {
+        this.cards.forEach((card) => card.reset());
+    }
+
+    reset() {
+        this.flipDownAllCards();
+        this.shuffleCards();
+        this.render();
+    }
+
+
 }
 
 class MemoryGame {
@@ -93,7 +133,7 @@ class MemoryGame {
     }
 
     #handleCardClick(card) {
-        if (this.flippedCards.length < 2 && !card.isFlipped) {
+        if (this.flippedCards.length < 2 && !card.isFlipped ) {
             card.toggleFlip();
             this.flippedCards.push(card);
 
@@ -101,6 +141,33 @@ class MemoryGame {
                 setTimeout(() => this.checkForMatch(), this.flipDuration);
             }
         }
+    }
+
+    checkForMatch() {
+        const [firstCard, secondCard] = this.flippedCards;
+
+        if (firstCard.matches(secondCard)) {
+            firstCard.match();
+            secondCard.match();
+            this.matchedCards.push(firstCard, secondCard);
+        } else {
+            firstCard.toggleFlip();
+            secondCard.toggleFlip();
+        }
+
+        this.flippedCards = [];
+    }
+
+    reset() {
+        this.board.reset();
+        this.flippedCards = [];
+        this.matchedCards = [];
+    }
+
+    resetGame() {
+        this.reset();
+        this.board.shuffleCards();
+        this.board.render();
     }
 }
 
